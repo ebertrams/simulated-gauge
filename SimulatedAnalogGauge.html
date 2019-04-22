@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+.slider {
+  -webkit-appearance: none;
+  width: 800px;
+  height: 15px;
+  border-radius: 5px;
+  background: #d3d3d3;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #4CAF50;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #4CAF50;
+  cursor: pointer;
+}
+</style>
+<script>
+function redraw()
+{
+	draw(document.getElementById("myRange").value);
+}
+function draw(temperature)
+{
+    var  canvas = document.getElementById("myCanvas");
+    var  context = canvas.getContext("2d");
+    context.clearRect(0,0,canvas.width, canvas.height);
+    var centerX = canvas.width / 2;
+    var centerY = canvas.height / 2;
+    var radius = canvas.height / 2 ;
+
+    context.translate(centerX, centerY)
+    //Green background
+    context.beginPath();
+    context.lineTo(0,0);
+    context.arc(0, 0, radius-30, Math.PI, 2*Math.PI-Math.PI/2*3/5, false);
+    context.lineTo(0,0);
+    context.fillStyle = "#008000";
+    context.fill();
+    context.beginPath();
+    context.lineTo(0,0);
+    context.arc(0, 0, radius-100, Math.PI, 2*Math.PI-Math.PI/2*3/5, false);
+    context.lineTo(0,0);
+    context.fillStyle = "#FFFFFF";
+    context.fill();
+    context.closePath();
+
+    //Yellow background
+    context.beginPath();
+    context.lineTo(0,0);
+    context.arc(0, 0, radius-30, 2*Math.PI-Math.PI/2*3/5, 2*Math.PI-Math.PI/2*1/5, false);
+    context.lineTo(0,0);
+    context.fillStyle = "#FFFF00";
+    context.fill();
+    context.beginPath();
+    context.lineTo(0,0);
+    context.arc(0, 0, radius-100, 2*Math.PI-Math.PI/2*3/5, 2*Math.PI-Math.PI/2*1/5, false);
+    context.lineTo(0,0);
+    context.fillStyle = "#FFFFFF";
+    context.fill();
+    context.closePath();
+
+    //Red background
+    context.beginPath();
+    context.lineTo(0,0);
+    context.arc(0, 0, radius-30, 2*Math.PI-Math.PI/2*1/5, 2*Math.PI, false);
+    context.lineTo(0,0);
+    context.fillStyle = "#FF0000";
+    context.fill();
+    context.beginPath();
+    context.lineTo(0,0);
+    context.arc(0, 0, radius-100, 2*Math.PI-Math.PI/2*1/5-1, 2*Math.PI, false);
+    context.lineTo(0,0);
+    context.fillStyle = "#FFFFFF";
+    context.fill();
+    context.closePath();
+
+    context.translate(-centerX, -centerY)
+
+	context.beginPath();
+	context.strokeStyle = '#000000';
+    context.fillStyle = "#000000";
+	context.translate(centerX,centerY);
+	var increment = 1;
+	context.font="15px Helvetica";
+	for (var i=0; i<=100; i++)
+	{
+		angle = -Math.PI/2 + Math.PI/100*i;
+		sineAngle = Math.sin(angle);
+		cosAngle = -Math.cos(angle);
+
+		if (i % 10 == 0) {
+		context.lineWidth = 8;
+		iPointX = sineAngle *(radius -radius/4);
+		iPointY = cosAngle *(radius -radius/4);
+		oPointX = sineAngle *(radius -radius/7);
+		oPointY = cosAngle *(radius -radius/7);
+
+		wPointX = sineAngle *(radius -radius/2.5);
+		wPointY = cosAngle *(radius -radius/2.5);
+		context.fillText((i)*increment,wPointX-2,wPointY+4);
+		}
+		else
+		{
+		context.lineWidth = 2;
+		iPointX = sineAngle *(radius -radius/5.5);
+		iPointY = cosAngle *(radius -radius/5.5);
+		oPointX = sineAngle *(radius -radius/7);
+		oPointY = cosAngle *(radius -radius/7);
+		}
+		context.beginPath();
+		context.moveTo(iPointX,iPointY);
+		context.lineTo(oPointX,oPointY);
+		context.stroke();
+		context.closePath();
+	}
+	var numOfSegments = temperature/increment;
+	angle = -Math.PI/2 + Math.PI/100*numOfSegments;
+	sineAngle = Math.sin(angle);
+	cosAngle = -Math.cos(angle);
+	pointX = sineAngle *(3/4*radius);
+	pointY = cosAngle *(3/4*radius);
+
+    //Tick center
+	context.beginPath();
+	context.strokeStyle = '#000000';
+	context.arc(0, 0, 19, 0, 2*Math.PI, true);
+    context.fillStyle = "#000000"
+	context.fill();
+    context.closePath();
+
+    //Tick
+	context.beginPath();
+	context.lineWidth=6;
+	context.moveTo(0,0);
+    context.lineTo(pointX,pointY);
+    context.stroke();
+    context.closePath();
+    context.restore();
+    context.translate(-centerX,-centerY);
+
+    //Legend
+    context.beginPath();
+    context.lineWidth=1;
+	context.strokeStyle = '#000000';
+    context.font = "50px Arial";
+	context.strokeText("°C",centerX-25,centerY-60);
+    context.closePath();
+}
+var slider = document.getElementById("myRange");
+var output = document.getElementById("demo");
+
+</script>
+</head>
+<body onload="draw(50);">
+
+<h1>Simulated Analog Temperature Gauge</h1>
+
+</br>
+<div align="center">
+    <h2>Change gauge's reading:</h2> 
+    <div class="slidecontainer" onchange="redraw();">
+        <input type="range" min="0" max="100" value="50" class="slider" id="myRange">
+    </div>
+
+    </br>
+    </br>
+    </br>
+    </br>
+
+
+    <canvas class="canvas" id="myCanvas" width="800" height="800">
+            Your browser does not support the HTML5 canvas tag.
+    </canvas>
+
+</div>
+
+</body>
+</html>
